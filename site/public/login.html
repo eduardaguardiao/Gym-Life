@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="website icon" href="assets/logoSimbolo.png">
+    <link rel="stylesheet" href="css/login.css">
+
+<body>
+    <!--HEADER-->
+    <div class="header">
+        <a href="index.html">
+            <img src="assets/logoSemfundo.png">
+        </a>
+    </div>
+
+
+    <!-- CADASTRO -->
+    <div class="cadastro">
+        <img src="assets/bannerTelaCadastro8.jpg">
+        <div class="container">
+            <div class="campos">
+                <h2>LOGIN</h2>
+                <span>USER</span><br>
+                <input id="user_input" placeholder="usuario">
+                <div class="campos">
+                    <span>SENHA</span><br>
+                    <input id="senha_input" placeholder="******" type="password">
+                </div>
+                <br>
+                <button onclick="entrar()">
+                    ENTRAR
+                </button>
+        
+                
+                <div class="possuiConta">
+                    <p>
+                        Não tem uma conta?  <a href="./cadastro.html">Cadastre-se</a>
+                    </p>
+                </div>
+                <!-- circle loading -->
+                <!-- <div class="loading-div" id="div_aguardar">
+                    <img src="assets/circle-loading.gif" id="loading-gif">
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+   
+</body>
+
+</html>
+<script>
+     function entrar() {
+        // aguardar();
+
+        var userVar = user_input.value;
+        var senhaVar = senha_input.value;
+
+        if (userVar == "" || senhaVar == "") {
+            
+            alert(`Preencha todos os campos!`)
+            // finalizarAguardar();
+            return false;
+        }
+        // else {
+        //     setInterval(sumirMensagem, 5000)
+        // }
+
+        console.log("FORM LOGIN: ", userVar);
+        console.log("FORM SENHA: ", senhaVar);
+
+        fetch("/usuarios/autenticar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                userServer: userVar,
+                senhaServer: senhaVar
+            })
+        }).then(function (resposta) {
+            console.log("ESTOU NO THEN DO entrar()!")
+
+            if (resposta.ok) {
+                console.log(resposta);
+
+                resposta.json().then(json => {
+                    console.log(json);
+                    console.log(JSON.stringify(json));
+                    
+                    sessionStorage.USER_USUARIO = json.username;
+                    sessionStorage.NOME_USUARIO = json.nome;
+                    sessionStorage.ID_USUARIO = json.idUsuario;
+                    sessionStorage.AQUARIOS = JSON.stringify(json.aquarios)
+
+                    setTimeout(function () {
+                        window.location = "quiz.html";
+                    }, 1000); // apenas para exibir o loa ding
+
+                });
+
+            } else {
+
+                console.log("Houve um erro ao tentar realizar o login!");
+
+                resposta.text().then(texto => {
+                    // console.error(texto);
+                    // finalizarAguardar(texto);
+                });
+            }
+
+        }).catch(function (erro) {
+            console.log(erro);
+        })
+
+        return false;
+    }
+
+    // function sumirMensagem() {
+    //     cardErro.style.display = "none"
+    // }
+    
+</script>
